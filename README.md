@@ -31,6 +31,7 @@ Or add these lines to your Cosmos kernel .csproj:
 ```
 
 ##### note: Only ACTIVE transfer mode is currently supported due to problems with the Cosmos TCP/IP stack.
+##### Port of a C written Epitech project: [NWP_myftp_2019](https://github.com/valentinbreiz/NWP_myftp_2019)
 
 ## Authors
 

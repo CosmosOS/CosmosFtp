@@ -33,4 +33,4 @@ Give a ⭐️ if this project helped you!
 ## 📝 License
 
 Copyright © 2022 [CosmosOS](https://github.com/CosmosOS).<br />
-This project is [BSD Clause 3 License](https://github.com/CosmosOS/CosmosFtp/blob/main/LICENSE.txt) licensed.
+This project is [BSD Clause 3](https://github.com/CosmosOS/CosmosFtp/blob/main/LICENSE.txt) licensed.

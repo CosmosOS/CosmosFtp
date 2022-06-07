@@ -1,6 +1,8 @@
 ﻿<h1 align="center">CosmosFTP Server 🚀</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/nuget/v/CosmosFtpServer.svg" />
+  <a href="https://www.nuget.org/packages/CosmosFtpServer/" target="_blank">
+    <img alt="Version" src="https://img.shields.io/nuget/v/CosmosFtpServer.svg" />
+  </a>
   <a href="https://github.com/CosmosOS/CosmosFtp/blob/main/LICENSE.txt" target="_blank">
     <img alt="License: BSD Clause 3 License" src="https://img.shields.io/badge/license-BSD License-yellow.svg" />
   </a>

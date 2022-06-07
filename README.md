@@ -10,7 +10,7 @@
 
 ## Usage
 
-Install the Nuget Package from [Nuget](https://www.nuget.org/packages/CosmosFtpServer/) or [Github](https://github.com/CosmosOS/CosmosFtp/packages/1467237)
+Install the Nuget Package from [Nuget](https://www.nuget.org/packages/CosmosFtpServer/) or [Github](https://github.com/CosmosOS/CosmosFtp/packages/1467237):
 
 ```PM
 Install-Package CosmosFtpServer -Version 1.0.1
@@ -20,7 +20,8 @@ Install-Package CosmosFtpServer -Version 1.0.1
 dotnet add PROJECT package CosmosFtpServer --version 1.0.1
 ```
 
-or add these lines to your Cosmos kernel .csproj:
+Or add these lines to your Cosmos kernel .csproj:
+
 ```
 <ItemGroup>
     <PackageReference Include="CosmosFtpServer" Version="1.0.1" NoWarn="NU1604;NU1605" />
@@ -29,12 +30,9 @@ or add these lines to your Cosmos kernel .csproj:
 
 ##### note: Only ACTIVE transfer mode is currently supported due to problems with the Cosmos TCP/IP stack.
 
-
 ## Authors
 
-👤 **valentinbreiz**
-
-* Github: [@valentinbreiz](https://github.com/valentinbreiz)
+👤 **[@valentinbreiz](https://github.com/valentinbreiz)**
 
 ## 🤝 Contributing
 

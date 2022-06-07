@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Cosmos</Authors>
+    <Company>Cosmos</Company>
+    <Description>FTP Server for CosmosOS.</Description>
+    <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+      <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <None Include="LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cosmos.System2" Version="0.1.0-localbuild" NoWarn="NU1604" />
+  </ItemGroup>
+
+</Project>

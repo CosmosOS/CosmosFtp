@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cosmos.System2" Version="0.1.0-*" NoWarn="NU1604;NU1605" />
+    <PackageReference Include="Cosmos.System2" NoWarn="NU1604;NU1605" />
   </ItemGroup>
 
   <ItemGroup>

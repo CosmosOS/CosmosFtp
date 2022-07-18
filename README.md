@@ -30,7 +30,7 @@ Or add these lines to your Cosmos kernel .csproj:
 </ItemGroup>
 ```
 
-You can find more information about the FTP server and how to connect from a remote computer in the [Cosmos Documentation].(https://cosmosos.github.io/articles/Kernel/Network.html#ftp).
+You can find more information about the FTP server and how to connect from a remote computer in the [Cosmos Documentation](https://cosmosos.github.io/articles/Kernel/Network.html#ftp).
 
 ##### note: Only ACTIVE transfer mode is currently supported due to problems with the Cosmos TCP/IP stack.
 ##### Port of a C written Epitech project: [NWP_myftp_2019](https://github.com/valentinbreiz/NWP_myftp_2019)

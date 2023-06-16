@@ -5,10 +5,8 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Cosmos.System;
 using Cosmos.System.FileSystem;
 using Cosmos.System.FileSystem.Listing;
 using Cosmos.System.Network.IPv4;
@@ -508,8 +506,6 @@ namespace CosmosFtpServer
                 }
                 else if (ftpClient.Mode == TransferMode.PASV)
                 {
-                    Global.mDebugger.Send("Test.");
-
                     ftpClient.Data = ftpClient.DataListener.AcceptTcpClient();
                     ftpClient.DataListener.Stop();
 

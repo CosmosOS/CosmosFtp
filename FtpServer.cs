@@ -7,7 +7,6 @@
 using System;
 using System.IO;
 using System.Text;
-using Cosmos.System;
 using Cosmos.System.FileSystem;
 using Cosmos.System.Network.IPv4;
 using Cosmos.System.Network.IPv4.TCP;
@@ -167,7 +166,7 @@ namespace CosmosFtpServer
             }
             catch (Exception ex)
             {
-                Global.mDebugger.Send("Exception: " + ex.Message);
+                global::System.Console.WriteLine("Exception: " + ex.Message);
             }
         }
 

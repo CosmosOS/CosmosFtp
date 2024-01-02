@@ -29,7 +29,7 @@ namespace CosmosFtpServer
         /// <summary>
         /// TCP Control Client. Used to send commands.
         /// </summary>
-        private TcpClient Control { get; set; }
+        internal TcpClient Control { get; set; }
 
         /// <summary>
         /// TCP Control Client. Used to send and receive commands.
@@ -39,7 +39,7 @@ namespace CosmosFtpServer
         /// <summary>
         /// TCP Data Transfer Client. Used to transfer data.
         /// </summary>
-        private TcpClient Data { get; set; }
+        internal TcpClient Data { get; set; }
 
         /// <summary>
         /// TCP Control Client. Used to send and receive commands.

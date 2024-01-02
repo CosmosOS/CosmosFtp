@@ -265,7 +265,7 @@ namespace CosmosFtpServer
             /*
                 TODO: - Fix new TCP SYN connection (https://stackoverflow.com/questions/67824462/why-does-my-ftp-client-open-multiple-control-connection)
                       - Find port dynamically.
-            */
+            
 
             ushort port = 20;
             var address = ftpClient.Control.Client.LocalEndPoint.ToString();
@@ -276,6 +276,7 @@ namespace CosmosFtpServer
             ftpClient.DataListener.Start();
 
             ftpClient.Mode = TransferMode.PASV;
+            */
         }
 
         /// <summary>
@@ -308,6 +309,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessList(FtpClient ftpClient, FtpCommand command)
         {
+            /*
             try
             {
                 if (ftpClient.Mode == TransferMode.NONE)
@@ -332,6 +334,9 @@ namespace CosmosFtpServer
             {
                 ftpClient.SendReply(425, "Can't open data connection.");
             }
+            */
+
+            ftpClient.SendReply(425, "Can't open data connection.");
         }
 
         /// <summary>
@@ -491,6 +496,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessStor(FtpClient ftpClient, FtpCommand command)
         {
+            /*
             if (String.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
@@ -520,6 +526,9 @@ namespace CosmosFtpServer
             {
                 ftpClient.SendReply(425, "Can't open data connection.");
             }
+            */
+
+            ftpClient.SendReply(425, "Can't open data connection.");
         }
 
         /// <summary>
@@ -529,6 +538,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         private void DoStor(FtpClient ftpClient, FtpCommand command)
         {
+            /*
             var ep = new EndPoint(Address.Zero, 0);
             var data = ftpClient.Data.Receive(ref ep);
 
@@ -542,6 +552,7 @@ namespace CosmosFtpServer
             }
 
             ftpClient.Data.Close();
+            */
 
             ftpClient.SendReply(226, "Transfer complete.");
         }
@@ -553,6 +564,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessRetr(FtpClient ftpClient, FtpCommand command)
         {
+            /*
             if (String.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
@@ -581,7 +593,9 @@ namespace CosmosFtpServer
             catch
             {
                 ftpClient.SendReply(425, "Can't open data connection.");
-            }
+            }*/
+
+            ftpClient.SendReply(425, "Can't open data connection.");
         }
 
         /// <summary>
@@ -589,6 +603,7 @@ namespace CosmosFtpServer
         /// </summary>
         private void DoRetr(FtpClient ftpClient, FtpCommand command)
         {
+            /*
             try
             {
                 var data = File.ReadAllBytes(CurrentDirectory + "\\" + command.Content);
@@ -599,6 +614,7 @@ namespace CosmosFtpServer
             {
                 ftpClient.SendReply(550, "Requested action not taken.");
             }
+            */
 
             ftpClient.DataStream.Close();
 

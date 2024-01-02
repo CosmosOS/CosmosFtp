@@ -6,6 +6,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -110,7 +111,9 @@ namespace CosmosFtpServer
             {
                 TcpClient client = tcpListener.AcceptTcpClient();
 
-                Log("Client : New connection from " + client.Client.RemoteEndPoint.ToString()); ;
+                IPEndPoint endpoint = client.Client.RemoteEndPoint as IPEndPoint;
+
+                Log("Client : New connection from " + endpoint.Address.ToString()); ;
 
                 ReceiveNewClient(client);
 
@@ -152,25 +155,17 @@ namespace CosmosFtpServer
                 byte[] buffer = new byte[ftpClient.Control.ReceiveBufferSize];
                 bytesRead = ftpClient.ControlStream.Read(buffer, 0, buffer.Length);
 
-                var data = Encoding.ASCII.GetString(buffer);
-                data = data.Remove(data.Length - 2, 2);
+                string data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                data = data.TrimEnd(new char[] { '\r', '\n' });
 
-                Log("Client : " + data);
-
-                var splitted = data.Split(' ');
-
-                var command = new FtpCommand();
-                command.Command = splitted[0];
-
-                if (splitted.Length > 1)
+                string[] splitted = data.Split(' ');
+                FtpCommand command = new FtpCommand
                 {
-                    //Handle command content containing spaces
-                    int i = data.IndexOf(" ") + 1;
-                    command.Content = data.Substring(i);
+                    Command = splitted[0],
+                    Content = splitted.Length > 1 ? string.Join(" ", splitted.Skip(1)).Replace('/', '\\') : string.Empty
+                };
 
-                    command.Content = command.Content.Replace('/', '\\');
-                }
-
+                Log("Client : '" + command.Command + "'");
                 CommandManager.ProcessRequest(ftpClient, command);
             }
             catch (Exception ex)
@@ -187,7 +182,7 @@ namespace CosmosFtpServer
         {
             if (Debug)
             {
-                global::System.Console.WriteLine(str);
+                Cosmos.System.Global.Debugger.Send(str);
             }
         }
 

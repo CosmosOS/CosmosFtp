@@ -6,10 +6,11 @@
 
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using Cosmos.System.FileSystem;
 using Cosmos.System.Network.IPv4;
-using Cosmos.System.Network.IPv4.TCP;
 
 namespace CosmosFtpServer
 {
@@ -89,6 +90,9 @@ namespace CosmosFtpServer
                 throw new Exception("FTP server can't open specified directory.");
             }
 
+            IPAddress address = IPAddress.Any;
+            tcpListener = new TcpListener(address, 21);
+
             CommandManager = new FtpCommandManager(fs, directory);
 
             Listening = true;
@@ -100,15 +104,17 @@ namespace CosmosFtpServer
         /// </summary>
         public void Listen()
         {
+            tcpListener.Start();
+
             while (Listening)
             {
-                tcpListener = new TcpListener(21);
-                tcpListener.Start();
-                var client = tcpListener.AcceptTcpClient();
+                TcpClient client = tcpListener.AcceptTcpClient();
 
-                Log("Client : New connection from " + client.RemoteEndPoint.Address.ToString()); ;
+                Log("Client : New connection from " + client.Client.RemoteEndPoint.ToString()); ;
 
                 ReceiveNewClient(client);
+
+                client.Close();
             }
         }
 
@@ -122,12 +128,12 @@ namespace CosmosFtpServer
 
             ftpClient.SendReply(220, "Service ready for new user.");
 
-            while (ftpClient.Control.IsConnected())
+            while (ftpClient.Control.Connected)
             {
                 ReceiveRequest(ftpClient);
             }
 
-            ftpClient.Control.Close();
+            ftpClient.ControlStream.Close();
 
             //TODO: Support multiple FTP client connection
             Close();
@@ -139,11 +145,14 @@ namespace CosmosFtpServer
         /// <param name="ftpClient">FTP Client.</param>
         private void ReceiveRequest(FtpClient ftpClient)
         {
-            var ep = new EndPoint(Address.Zero, 0);
+            int bytesRead = 0;
 
             try
             {
-                var data = Encoding.ASCII.GetString(ftpClient.Control.Receive(ref ep));
+                byte[] buffer = new byte[ftpClient.Control.ReceiveBufferSize];
+                bytesRead = ftpClient.ControlStream.Read(buffer, 0, buffer.Length);
+
+                var data = Encoding.ASCII.GetString(buffer);
                 data = data.Remove(data.Length - 2, 2);
 
                 Log("Client : " + data);

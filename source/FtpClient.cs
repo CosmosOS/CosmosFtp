@@ -4,8 +4,9 @@
 * PROGRAMMERS:      Valentin Charbonnier <valentinbreiz@gmail.com>
 */
 
-using Cosmos.System.Network.IPv4;
-using Cosmos.System.Network.IPv4.TCP;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 
 namespace CosmosFtpServer
@@ -18,7 +19,7 @@ namespace CosmosFtpServer
         /// <summary>
         /// Client IP Address.
         /// </summary>
-        internal Address Address { get; set; }
+        internal IPAddress Address { get; set; }
 
         /// <summary>
         /// Client TCP Port.
@@ -28,12 +29,22 @@ namespace CosmosFtpServer
         /// <summary>
         /// TCP Control Client. Used to send commands.
         /// </summary>
-        internal TcpClient Control { get; set; }
+        private TcpClient Control { get; set; }
+
+        /// <summary>
+        /// TCP Control Client. Used to send and receive commands.
+        /// </summary>
+        internal NetworkStream ControlStream { get; set; }
 
         /// <summary>
         /// TCP Data Transfer Client. Used to transfer data.
         /// </summary>
-        internal TcpClient Data { get; set; }
+        private TcpClient Data { get; set; }
+
+        /// <summary>
+        /// TCP Control Client. Used to send and receive commands.
+        /// </summary>
+        internal NetworkStream DataStream { get; set; }
 
         /// <summary>
         /// TCP Data Transfer Listener. Used in PASV mode.
@@ -69,6 +80,7 @@ namespace CosmosFtpServer
             Control = client;
             Connected = false;
             Mode = TransferMode.NONE;
+            ControlStream = client.GetStream();
         }
 
         /// <summary>
@@ -96,7 +108,8 @@ namespace CosmosFtpServer
         internal void SendReply(int code, string message)
         {
             message = message.Replace('\\', '/');
-            Control.Send(Encoding.ASCII.GetBytes(code + " " + message + "\r\n"));
+            byte[] response = Encoding.ASCII.GetBytes(code + " " + message + "\r\n");
+            ControlStream.Write(response, 0, response.Length);
         }
     }
 }

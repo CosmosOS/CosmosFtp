@@ -6,11 +6,11 @@
 
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using Cosmos.System.FileSystem;
 using Cosmos.System.FileSystem.Listing;
-using Cosmos.System.Network.IPv4;
-using Cosmos.System.Network.IPv4.TCP;
 
 namespace CosmosFtpServer
 {
@@ -268,11 +268,11 @@ namespace CosmosFtpServer
             */
 
             ushort port = 20;
-            var address = ftpClient.Control.StateMachine.LocalEndPoint.Address.ToByteArray();
+            var address = ftpClient.Control.Client.LocalEndPoint.ToString();
 
-            ftpClient.SendReply(200, $"Entering Passive Mode ({address[0]},{address[1]},{address[2]},{address[3]},{port / 256},{port % 256})");
+            ftpClient.SendReply(200, $"Entering Passive Mode ({address},{port / 256},{port % 256})");
 
-            ftpClient.DataListener = new TcpListener(port);
+            ftpClient.DataListener = new TcpListener(IPAddress.Any, port);
             ftpClient.DataListener.Start();
 
             ftpClient.Mode = TransferMode.PASV;
@@ -286,10 +286,14 @@ namespace CosmosFtpServer
         internal void ProcessPort(FtpClient ftpClient, FtpCommand command)
         {
             var splitted = command.Content.Split(',');
+            byte[] array = new byte[] {
+                (byte)int.Parse(splitted[0]), (byte)int.Parse(splitted[1]), (byte)int.Parse(splitted[2]), (byte)int.Parse(splitted[3])
+            };
+            var address = new IPAddress(array);
 
-            ftpClient.Data = new TcpClient(ftpClient.Port);
+            //ftpClient.DataStream = new TcpClient();
 
-            ftpClient.Address = new Address((byte)int.Parse(splitted[0]), (byte)int.Parse(splitted[1]), (byte)int.Parse(splitted[2]), (byte)int.Parse(splitted[3]));
+            ftpClient.Address = address;
             ftpClient.Port = Int32.Parse(splitted[4]) * 256 + Int32.Parse(splitted[5]);
 
             ftpClient.SendReply(200, "Entering Active Mode.");
@@ -356,9 +360,9 @@ namespace CosmosFtpServer
                 sb.AppendLine(directoryEntry.mName);
             }
 
-            ftpClient.Data.Send(Encoding.ASCII.GetBytes(sb.ToString()));
+            ftpClient.DataStream.Write(Encoding.ASCII.GetBytes(sb.ToString()));
 
-            ftpClient.Data.Close();
+            ftpClient.DataStream.Close();
 
             ftpClient.SendReply(226, "Transfer complete.");
         }
@@ -589,14 +593,14 @@ namespace CosmosFtpServer
             {
                 var data = File.ReadAllBytes(CurrentDirectory + "\\" + command.Content);
 
-                ftpClient.Data.Send(data);
+                ftpClient.DataStream.Wer(data);
             }
             catch
             {
                 ftpClient.SendReply(550, "Requested action not taken.");
             }
 
-            ftpClient.Data.Close();
+            ftpClient.DataStream.Close();
 
             ftpClient.SendReply(226, "Transfer complete.");
         }
@@ -610,7 +614,7 @@ namespace CosmosFtpServer
         {
             ftpClient.SendReply(221, "Service closing control connection.");
 
-            ftpClient.Control.Close();
+            ftpClient.ControlStream.Close();
         }
     }
 }

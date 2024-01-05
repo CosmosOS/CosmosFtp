@@ -130,7 +130,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessUser(FtpClient ftpClient, FtpCommand command)
         {
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -141,7 +141,7 @@ namespace CosmosFtpServer
                 ftpClient.Connected = true;
                 ftpClient.SendReply(230, "User logged in, proceed.");
             }
-            else if (String.IsNullOrEmpty(ftpClient.Username))
+            else if (string.IsNullOrEmpty(ftpClient.Username))
             {
                 ftpClient.Username = command.Content;
                 ftpClient.SendReply(331, "User name okay, need password.");
@@ -159,7 +159,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessPass(FtpClient ftpClient, FtpCommand command)
         {
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -168,7 +168,7 @@ namespace CosmosFtpServer
             {
                 ftpClient.SendReply(530, "Login incorrect.");
             }
-            else if (String.IsNullOrEmpty(ftpClient.Username))
+            else if (string.IsNullOrEmpty(ftpClient.Username))
             {
                 ftpClient.SendReply(332, "Need account for login.");
             }
@@ -187,7 +187,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessCwd(FtpClient ftpClient, FtpCommand command)
         {
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -262,21 +262,15 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessPasv(FtpClient ftpClient, FtpCommand command)
         {
-            /*
-                TODO: - Fix new TCP SYN connection (https://stackoverflow.com/questions/67824462/why-does-my-ftp-client-open-multiple-control-connection)
-                      - Find port dynamically.
-            
-
-            ushort port = 20;
+            ushort port = Cosmos.System.Network.IPv4.TCP.Tcp.GetDynamicPort();
             var address = ftpClient.Control.Client.LocalEndPoint.ToString();
-
-            ftpClient.SendReply(200, $"Entering Passive Mode ({address},{port / 256},{port % 256})");
 
             ftpClient.DataListener = new TcpListener(IPAddress.Any, port);
             ftpClient.DataListener.Start();
 
+            ftpClient.SendReply(200, $"Entering Passive Mode ({address},{port / 256},{port % 256})");
+
             ftpClient.Mode = TransferMode.PASV;
-            */
         }
 
         /// <summary>
@@ -286,16 +280,16 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessPort(FtpClient ftpClient, FtpCommand command)
         {
-            var splitted = command.Content.Split(',');
+            string[] splitted = command.Content.Split(',');
             byte[] array = new byte[] {
                 (byte)int.Parse(splitted[0]), (byte)int.Parse(splitted[1]), (byte)int.Parse(splitted[2]), (byte)int.Parse(splitted[3])
             };
-            var address = new IPAddress(array);
+            IPAddress address = new IPAddress(array);
 
-            //ftpClient.DataStream = new TcpClient();
+            ftpClient.Data = new TcpClient();
 
             ftpClient.Address = address;
-            ftpClient.Port = Int32.Parse(splitted[4]) * 256 + Int32.Parse(splitted[5]);
+            ftpClient.Port = int.Parse(splitted[4]) * 256 + int.Parse(splitted[5]);
 
             ftpClient.SendReply(200, "Entering Active Mode.");
 
@@ -309,7 +303,6 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessList(FtpClient ftpClient, FtpCommand command)
         {
-            /*
             try
             {
                 if (ftpClient.Mode == TransferMode.NONE)
@@ -319,22 +312,28 @@ namespace CosmosFtpServer
                 else if (ftpClient.Mode == TransferMode.ACTV)
                 {
                     ftpClient.Data.Connect(ftpClient.Address, ftpClient.Port);
+                    ftpClient.DataStream = ftpClient.Data.GetStream();
 
                     DoList(ftpClient, command);
+
+                    return;
                 }
                 else if (ftpClient.Mode == TransferMode.PASV)
                 {
                     ftpClient.Data = ftpClient.DataListener.AcceptTcpClient();
-                    ftpClient.DataListener.Stop();
+                    ftpClient.DataStream = ftpClient.Data.GetStream();
 
                     DoList(ftpClient, command);
+
+                    ftpClient.DataListener.Stop();
+
+                    return;
                 }
             }
             catch
             {
                 ftpClient.SendReply(425, "Can't open data connection.");
             }
-            */
 
             ftpClient.SendReply(425, "Can't open data connection.");
         }
@@ -367,7 +366,7 @@ namespace CosmosFtpServer
 
             ftpClient.DataStream.Write(Encoding.ASCII.GetBytes(sb.ToString()));
 
-            ftpClient.DataStream.Close();
+            ftpClient.Data.Close();
 
             ftpClient.SendReply(226, "Transfer complete.");
         }
@@ -379,7 +378,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessDele(FtpClient ftpClient, FtpCommand command)
         {
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -409,7 +408,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessRmd(FtpClient ftpClient, FtpCommand command)
         {
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -439,7 +438,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessMkd(FtpClient ftpClient, FtpCommand command)
         {
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -496,8 +495,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessStor(FtpClient ftpClient, FtpCommand command)
         {
-            /*
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -511,22 +509,28 @@ namespace CosmosFtpServer
                 else if (ftpClient.Mode == TransferMode.ACTV)
                 {
                     ftpClient.Data.Connect(ftpClient.Address, ftpClient.Port);
+                    ftpClient.DataStream = ftpClient.Data.GetStream();
 
                     DoStor(ftpClient, command);
+
+                    return;
                 }
                 else if (ftpClient.Mode == TransferMode.PASV)
                 {
                     ftpClient.Data = ftpClient.DataListener.AcceptTcpClient();
-                    ftpClient.DataListener.Stop();
+                    ftpClient.DataStream = ftpClient.Data.GetStream();
 
                     DoStor(ftpClient, command);
+
+                    ftpClient.DataListener.Stop();
+
+                    return;
                 }
             }
             catch
             {
                 ftpClient.SendReply(425, "Can't open data connection.");
             }
-            */
 
             ftpClient.SendReply(425, "Can't open data connection.");
         }
@@ -538,23 +542,31 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         private void DoStor(FtpClient ftpClient, FtpCommand command)
         {
-            /*
-            var ep = new EndPoint(Address.Zero, 0);
-            var data = ftpClient.Data.Receive(ref ep);
-
             try
             {
-                File.WriteAllBytes(CurrentDirectory + "\\" + command.Content, data);
+                string filePath = Path.Combine(CurrentDirectory, command.Content);
+
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    byte[] buffer = new byte[ftpClient.Data.ReceiveBufferSize];
+                    int count;
+
+                    while ((count = ftpClient.DataStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        fileStream.Write(buffer, 0, count);
+                    }
+                }
             }
             catch
             {
                 ftpClient.SendReply(550, "Requested action not taken.");
             }
+            finally
+            {
+                ftpClient.Data.Close();
 
-            ftpClient.Data.Close();
-            */
-
-            ftpClient.SendReply(226, "Transfer complete.");
+                ftpClient.SendReply(226, "Transfer complete.");
+            }
         }
 
         /// <summary>
@@ -564,8 +576,7 @@ namespace CosmosFtpServer
         /// <param name="command">FTP Command.</param>
         internal void ProcessRetr(FtpClient ftpClient, FtpCommand command)
         {
-            /*
-            if (String.IsNullOrEmpty(command.Content))
+            if (string.IsNullOrEmpty(command.Content))
             {
                 ftpClient.SendReply(501, "Syntax error in parameters or arguments.");
                 return;
@@ -579,21 +590,28 @@ namespace CosmosFtpServer
                 else if (ftpClient.Mode == TransferMode.ACTV)
                 {
                     ftpClient.Data.Connect(ftpClient.Address, ftpClient.Port);
+                    ftpClient.DataStream = ftpClient.Data.GetStream();
 
                     DoRetr(ftpClient, command);
+
+                    return;
                 }
                 else if (ftpClient.Mode == TransferMode.PASV)
                 {
                     ftpClient.Data = ftpClient.DataListener.AcceptTcpClient();
-                    ftpClient.DataListener.Stop();
+                    ftpClient.DataStream = ftpClient.Data.GetStream();
 
                     DoRetr(ftpClient, command);
+
+                    ftpClient.DataListener.Stop();
+
+                    return;
                 }
             }
             catch
             {
                 ftpClient.SendReply(425, "Can't open data connection.");
-            }*/
+            }
 
             ftpClient.SendReply(425, "Can't open data connection.");
         }
@@ -603,22 +621,23 @@ namespace CosmosFtpServer
         /// </summary>
         private void DoRetr(FtpClient ftpClient, FtpCommand command)
         {
-            /*
             try
             {
-                var data = File.ReadAllBytes(CurrentDirectory + "\\" + command.Content);
+                string filePath = Path.Combine(CurrentDirectory, command.Content);
+                byte[] data = File.ReadAllBytes(filePath);
 
-                ftpClient.DataStream.Wer(data);
+                ftpClient.DataStream.Write(data, 0, data.Length);
             }
             catch
             {
                 ftpClient.SendReply(550, "Requested action not taken.");
             }
-            */
+            finally
+            {
+                ftpClient.Data.Close();
 
-            ftpClient.DataStream.Close();
-
-            ftpClient.SendReply(226, "Transfer complete.");
+                ftpClient.SendReply(226, "Transfer complete.");
+            }
         }
 
         /// <summary>

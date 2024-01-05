@@ -170,7 +170,7 @@ namespace CosmosFtpServer
             }
             catch (Exception ex)
             {
-                global::System.Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine("Exception: " + ex.Message);
             }
         }
 

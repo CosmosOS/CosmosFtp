@@ -6,10 +6,11 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using Cosmos.System.FileSystem;
-using Cosmos.System.Network.IPv4;
-using Cosmos.System.Network.IPv4.TCP;
 
 namespace CosmosFtpServer
 {
@@ -89,6 +90,9 @@ namespace CosmosFtpServer
                 throw new Exception("FTP server can't open specified directory.");
             }
 
+            IPAddress address = IPAddress.Any;
+            tcpListener = new TcpListener(address, 21);
+
             CommandManager = new FtpCommandManager(fs, directory);
 
             Listening = true;
@@ -100,15 +104,19 @@ namespace CosmosFtpServer
         /// </summary>
         public void Listen()
         {
+            tcpListener.Start();
+
             while (Listening)
             {
-                tcpListener = new TcpListener(21);
-                tcpListener.Start();
-                var client = tcpListener.AcceptTcpClient();
+                TcpClient client = tcpListener.AcceptTcpClient();
 
-                Log("Client : New connection from " + client.RemoteEndPoint.Address.ToString()); ;
+                IPEndPoint endpoint = client.Client.RemoteEndPoint as IPEndPoint;
+
+                Log("Client : New connection from " + endpoint.Address.ToString()); ;
 
                 ReceiveNewClient(client);
+
+                client.Close();
             }
         }
 
@@ -122,12 +130,12 @@ namespace CosmosFtpServer
 
             ftpClient.SendReply(220, "Service ready for new user.");
 
-            while (ftpClient.Control.IsConnected())
+            while (ftpClient.Control.Connected)
             {
                 ReceiveRequest(ftpClient);
             }
 
-            ftpClient.Control.Close();
+            ftpClient.ControlStream.Close();
 
             //TODO: Support multiple FTP client connection
             Close();
@@ -139,34 +147,29 @@ namespace CosmosFtpServer
         /// <param name="ftpClient">FTP Client.</param>
         private void ReceiveRequest(FtpClient ftpClient)
         {
-            var ep = new EndPoint(Address.Zero, 0);
+            int bytesRead = 0;
 
             try
             {
-                var data = Encoding.ASCII.GetString(ftpClient.Control.Receive(ref ep));
-                data = data.Remove(data.Length - 2, 2);
+                byte[] buffer = new byte[ftpClient.Control.ReceiveBufferSize];
+                bytesRead = ftpClient.ControlStream.Read(buffer, 0, buffer.Length);
 
-                Log("Client : " + data);
+                string data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                data = data.TrimEnd(new char[] { '\r', '\n' });
 
-                var splitted = data.Split(' ');
-
-                var command = new FtpCommand();
-                command.Command = splitted[0];
-
-                if (splitted.Length > 1)
+                string[] splitted = data.Split(' ');
+                FtpCommand command = new FtpCommand
                 {
-                    //Handle command content containing spaces
-                    int i = data.IndexOf(" ") + 1;
-                    command.Content = data.Substring(i);
+                    Command = splitted[0],
+                    Content = splitted.Length > 1 ? string.Join(" ", splitted.Skip(1)).Replace('/', '\\') : string.Empty
+                };
 
-                    command.Content = command.Content.Replace('/', '\\');
-                }
-
+                Log("Client : '" + command.Command + "'");
                 CommandManager.ProcessRequest(ftpClient, command);
             }
             catch (Exception ex)
             {
-                global::System.Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine("Exception: " + ex.Message);
             }
         }
 
@@ -178,7 +181,7 @@ namespace CosmosFtpServer
         {
             if (Debug)
             {
-                global::System.Console.WriteLine(str);
+                Cosmos.System.Global.Debugger.Send(str);
             }
         }
 

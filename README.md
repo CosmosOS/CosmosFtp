@@ -15,18 +15,18 @@
 Install the Nuget Package from [Nuget](https://www.nuget.org/packages/CosmosFtpServer/) or [Github](https://github.com/CosmosOS/CosmosFtp/packages/1467237):
 
 ```PM
-Install-Package CosmosFtpServer -Version 1.0.7
+Install-Package CosmosFtpServer -Version 1.0.8
 ```
 
 ```PM
-dotnet add PROJECT package CosmosFtpServer --version 1.0.7
+dotnet add PROJECT package CosmosFtpServer --version 1.0.8
 ```
 
 Or add these lines to your Cosmos kernel .csproj:
 
 ```
 <ItemGroup>
-    <PackageReference Include="CosmosFtpServer" Version="1.0.7" NoWarn="NU1604;NU1605" />
+    <PackageReference Include="CosmosFtpServer" Version="1.0.8" NoWarn="NU1604;NU1605" />
 </ItemGroup>
 ```
 

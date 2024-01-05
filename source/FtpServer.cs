@@ -104,19 +104,17 @@ namespace CosmosFtpServer
         /// </summary>
         public void Listen()
         {
-            tcpListener.Start();
-
             while (Listening)
             {
+                tcpListener.Start();
+
                 TcpClient client = tcpListener.AcceptTcpClient();
 
                 IPEndPoint endpoint = client.Client.RemoteEndPoint as IPEndPoint;
 
-                Log("Client : New connection from " + endpoint.Address.ToString()); ;
+                Log("Client : New connection from " + endpoint.Address.ToString());
 
                 ReceiveNewClient(client);
-
-                client.Close();
             }
         }
 
@@ -135,7 +133,7 @@ namespace CosmosFtpServer
                 ReceiveRequest(ftpClient);
             }
 
-            ftpClient.ControlStream.Close();
+            ftpClient.Control.Close();
 
             //TODO: Support multiple FTP client connection
             Close();
@@ -181,6 +179,7 @@ namespace CosmosFtpServer
         {
             if (Debug)
             {
+                Console.WriteLine(str);
                 Cosmos.System.Global.Debugger.Send(str);
             }
         }

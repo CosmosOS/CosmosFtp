@@ -11,7 +11,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Cosmos.System.FileSystem;
-using Cosmos.System.Network.IPv4;
 
 namespace CosmosFtpServer
 {

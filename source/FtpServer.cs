@@ -152,9 +152,9 @@ namespace CosmosFtpServer
                 byte[] buffer = new byte[ftpClient.Control.ReceiveBufferSize];
                 bytesRead = ftpClient.ControlStream.Read(buffer, 0, buffer.Length);
 
-                string data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                data = data.TrimEnd(new char[] { '\r', '\n' });
+                string data = Encoding.ASCII.GetString(buffer, 0, bytesRead).Trim();
 
+                data = data.TrimEnd(new char[] { '\r', '\n' });
                 string[] splitted = data.Split(' ');
                 FtpCommand command = new FtpCommand
                 {
@@ -162,7 +162,7 @@ namespace CosmosFtpServer
                     Content = splitted.Length > 1 ? string.Join(" ", splitted.Skip(1)).Replace('/', '\\') : string.Empty
                 };
 
-                Log("Client : '" + command.Command + "'");
+                Log("Client : '" + command.Command + "' " + command.Content);
                 CommandManager.ProcessRequest(ftpClient, command);
             }
             catch (Exception ex)

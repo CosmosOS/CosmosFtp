@@ -15,18 +15,18 @@
 Install the Nuget Package from [Nuget](https://www.nuget.org/packages/CosmosFtpServer/) or [Github](https://github.com/CosmosOS/CosmosFtp/packages/1467237):
 
 ```PM
-Install-Package CosmosFtpServer -Version 1.0.8
+Install-Package CosmosFtpServer -Version 1.0.9
 ```
 
 ```PM
-dotnet add PROJECT package CosmosFtpServer --version 1.0.8
+dotnet add PROJECT package CosmosFtpServer --version 1.0.9
 ```
 
 Or add these lines to your Cosmos kernel .csproj:
 
 ```
 <ItemGroup>
-    <PackageReference Include="CosmosFtpServer" Version="1.0.8" NoWarn="NU1604;NU1605" />
+    <PackageReference Include="CosmosFtpServer" Version="1.0.9" NoWarn="NU1604;NU1605" />
 </ItemGroup>
 ```
 
@@ -40,7 +40,9 @@ You can find more information about the FTP server and how to connect from a rem
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/CosmosOS/CosmosFtp/issues). 
+Contributions, issues and feature requests are welcome!
+
+Feel free to check [issues page](https://github.com/CosmosOS/CosmosFtp/issues). 
 
 ## Show your support
 
@@ -48,5 +50,6 @@ Give a ⭐️ if this project helped you!
 
 ## 📝 License
 
-Copyright © 2022 [CosmosOS](https://github.com/CosmosOS).<br />
+Copyright © 2022 [CosmosOS](https://github.com/CosmosOS).
+
 This project is [BSD Clause 3](https://github.com/CosmosOS/CosmosFtp/blob/main/LICENSE.txt) licensed.
